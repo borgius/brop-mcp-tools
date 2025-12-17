@@ -54,9 +54,21 @@ If you’re using this repo as a template and want the fastest path to “my ext
 
 1. Clone your fork and open it in VS Code.
 2. Open **Copilot Chat**.
-3. Run the repo prompt file (Agent): use **“Run prompt”** from Copilot Chat / the Command Palette and select `.github/prompts/init-extension.prompt.md`.
-	- If you can’t run prompt files in your VS Code/Copilot version, open `.github/prompts/init-extension.prompt.md` and paste its contents into Copilot Chat as a fallback.
-4. Answer the questions Copilot asks (it will ask for anything missing: extension metadata + your MCP servers). Copilot will:
+3. Type `@init-extension` and describe what you want. For example:
+
+	```
+	@init-extension Set up my extension with:
+	- name: my-browser-tools
+	- displayName: My Browser Tools
+	- publisher: mycompany
+	- description: Browser automation tools for VS Code
+	- GitHub owner: @myhandle
+	- MCP server: npx @anthropic/mcp-server-puppeteer
+	```
+
+	The `init-extension` agent is defined in `.github/agents/init-extension.md`.
+
+4. Answer any follow-up questions. Copilot will:
 	- update `package.json` metadata
 	- update `.github/CODEOWNERS`
 	- write `resources/mcp.json`

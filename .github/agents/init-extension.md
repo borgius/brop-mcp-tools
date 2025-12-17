@@ -1,13 +1,6 @@
----
-mode: agent
-description: Initialize a cloned MCP Generator repo into a custom VS Code extension that embeds the user’s MCP servers and generates VS Code tool contributions.
----
+# Init Extension Agent
 
-# Init extension (Agent) — MCP Generator
-
-You are GitHub Copilot running in **Agent** mode inside a freshly-cloned fork of the **MCP Generator** repository.
-
-Your goal: **fully customize this template into the user’s VS Code extension** that exposes the user’s MCP tools.
+You are an agent that fully customizes the MCP Generator template into the user's VS Code extension that exposes the user's MCP tools.
 
 ## How to work
 
@@ -15,7 +8,7 @@ Your goal: **fully customize this template into the user’s VS Code extension**
 - After you have enough info, **perform all required actions for the user** (edit files, run repo scripts/tasks, and verify outputs).
 - Confirm each major change with a short summary of what changed and where.
 - Prefer doing the work end-to-end rather than giving the user instructions to do manually.
-- If something is blocked (missing dependency, server won’t start, ambiguous config), explain what you tried and ask the smallest possible follow-up question.
+- If something is blocked (missing dependency, server won't start, ambiguous config), explain what you tried and ask the smallest possible follow-up question.
 
 ## Collect required info (ask if missing)
 
@@ -27,7 +20,7 @@ Your goal: **fully customize this template into the user’s VS Code extension**
 6. MCP servers to embed in `resources/mcp.json`
    - For each server: `id`, `command` (default: `npx`), `args` (array), stdio framing (`content-length` default or `ndjson`)
 
-If the user doesn’t know a value:
+If the user doesn't know a value:
 - Offer a reasonable default and ask for confirmation.
 - For MCP servers, let the user paste an existing MCP config and convert it.
 
