@@ -35,9 +35,7 @@ Run:
 
 This starts all servers from `resources/mcp.json`, calls MCP `tools/list`, and rewrites `package.json.contributes.languageModelTools`.
 
-Tool IDs follow:
-
-`mcp__<server>__<tool>`
+Generated tool IDs use a friendly format (for example `brop_cdp_navigate`). Each contributed tool also includes explicit routing metadata (`mcpServer` and `mcpTool`) so the extension knows which MCP server and tool to invoke at runtime.
 
 ## Run/debug
 
@@ -136,12 +134,6 @@ You can use this project as a starting point when creating your own VS Code exte
 6. Update README with project-specific instructions and prerequisites
 7. Package & publish when ready
 
-If you'd like, I can also add a GitHub Actions workflow to run `npm test` and `npm run update-tools` on each PR—done. See `.github/workflows/ci.yml`.
+A GitHub Actions workflow is included at `.github/workflows/ci.yml`; it runs compile, tests, and validates `update-tools`. The workflow also includes an optional auto-commit step (runs on pushes to the default branch) that will commit `package.json` changes when `update-tools` updates the contributed tools — edit or remove that step if you prefer manual commits.
 
-This repository also includes an optional auto-commit step (runs on pushes to the default branch) that will run `update-tools` and commit changes to `package.json` automatically. The action uses `GITHUB_TOKEN` and runs only on `push` events to avoid committing from forks via PRs. If you prefer not to auto-commit, remove or disable the corresponding step in `.github/workflows/ci.yml`.
-
-Prefer editing `resources/mcp.example.json` when getting started and then copy it to `resources/mcp.json` in your fork when you're ready.
-
-See `TEMPLATE.md` for a concise onboarding checklist.
-
-Note: Update `.github/CODEOWNERS` with your GitHub handle so the correct people are requested for review automatically.
+Prefer editing `resources/mcp.example.json` while getting started and copy it to `resources/mcp.json` in your fork when ready. See `TEMPLATE.md` for a concise onboarding checklist. Update `.github/CODEOWNERS` with your GitHub handle so the correct people are requested for review automatically.
