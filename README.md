@@ -48,7 +48,23 @@ Note: some MCP servers (like browser automation servers) may require an external
 
 You can use this project as a starting point when creating your own VS Code extension that exposes MCP-backed tools. Below are step-by-step instructions and examples to help you fork, customize, test, and publish your extension.
 
-### Quick start (recommended)
+### Copilot-assisted setup (recommended)
+
+If you’re using this repo as a template and want the fastest path to “my extension with my MCP tools”, you can let **GitHub Copilot** do the customization for you.
+
+1. Clone your fork and open it in VS Code.
+2. Open **Copilot Chat**.
+3. Run the repo prompt file (Agent): use **“Run prompt”** from Copilot Chat / the Command Palette and select `.github/prompts/init-extension.prompt.md`.
+	- If you can’t run prompt files in your VS Code/Copilot version, open `.github/prompts/init-extension.prompt.md` and paste its contents into Copilot Chat as a fallback.
+4. Answer the questions Copilot asks (it will ask for anything missing: extension metadata + your MCP servers). Copilot will:
+	- update `package.json` metadata
+	- update `.github/CODEOWNERS`
+	- write `resources/mcp.json`
+	- run `npm install`, `npm run update-tools`, and `npm run compile`
+
+Review the diff before publishing.
+
+### Manual
 
 1. Use GitHub's **Use this template** button or fork the repo to create your own copy.
 2. Clone your fork locally and install dependencies:
