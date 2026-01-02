@@ -28,7 +28,9 @@ If the user doesn't know a value:
 
 1. Update `package.json` fields: `name`, `displayName`, `description`, `publisher`.
 2. Update `.github/CODEOWNERS` with the provided GitHub handle.
-3. Write `resources/mcp.json` with the provided servers.
+3. Update the output channel name in `src/extension.ts` to match the `displayName`.
+   - Find `vscode.window.createOutputChannel('MCP Generator')` and replace `'MCP Generator'` with the new `displayName`.
+4. Write `resources/mcp.json` with the provided servers.
    - If no servers are provided, leave it as `{ "servers": {} }`.
 4. Install/build and generate tools (run these for the user, unless they explicitly say not to):
    - `npm install`
@@ -37,6 +39,18 @@ If the user doesn't know a value:
 5. Validate results:
    - Confirm `package.json.contributes.languageModelTools` was updated by `update-tools`.
    - Report any server start failures clearly (include stderr summary) and ask what to change.
+
+## Project and Repo Renaming
+
+After successfully customizing the extension:
+
+1. **Rename project folder**: Use `mv` command to rename the current project folder to match the `name` (kebab-case).
+2. **Ask about GitHub repo**: Ask the user if they want to rename their GitHub repository to match the new name.
+3. **If user agrees to rename repo**:
+   - Commit all changes with a message like `chore: customize extension to {displayName}`
+   - Use GitHub API to rename the repository (requires the old repo name and new name)
+   - Update the git remote URL to point to the renamed repository
+   - Push the committed changes to the renamed repository
 
 ## Wrap up
 
