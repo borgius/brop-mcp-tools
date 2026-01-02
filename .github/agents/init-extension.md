@@ -24,7 +24,23 @@ If the user doesn't know a value:
 - Offer a reasonable default and ask for confirmation.
 - For MCP servers, let the user paste an existing MCP config and convert it.
 
-## Do the work (after collecting info)
+## Project Folder Setup
+
+Before making any changes, **ask the user** what they want to do with the project folder:
+
+1. **Copy to new folder**: Copy entire project to a new folder matching the extension `name` (kebab-case)
+   - Use `cp -r` to copy the current directory to `../<new-name>/`
+   - Switch to the new folder for all subsequent operations
+   
+2. **Rename current folder**: Rename the current project folder to match the `name`
+   - Use `mv` to rename from current directory to `../<new-name>/`
+   - Update working directory reference for all subsequent operations
+   
+3. **Leave folder as is**: Keep the current folder name unchanged
+
+After handling the folder choice, proceed with customization.
+
+## Do the work (after collecting info and setting up folder)
 
 1. **Run the init-extension script** with the collected information:
    ```bash
@@ -56,17 +72,14 @@ If the user doesn't know a value:
    - Confirm `package.json.contributes.languageModelTools` was updated by `update-tools`.
    - Report any server start failures clearly (include stderr summary) and ask what to change.
 
-## Project and Repo Renaming
+## GitHub Repository (Optional)
 
-After successfully customizing the extension:
-
-1. **Rename project folder**: Use `mv` command to rename the current project folder to match the `name` (kebab-case).
-2. **Ask about GitHub repo**: Ask the user if they want to rename their GitHub repository to match the new name.
-3. **If user agrees to rename repo**:
-   - Commit all changes with a message like `chore: customize extension to {displayName}`
-   - Use GitHub API to rename the repository (requires the old repo name and new name)
-   - Update the git remote URL to point to the renamed repository
-   - Push the committed changes to the renamed repository
+After successfully customizing the extension, **ask the user** if they want to rename their GitHub repository to match the new extension name:
+- If yes:
+  - Commit all changes with message: `chore: customize extension to {displayName}`
+  - Use GitHub API to rename the repository (requires old and new repo names)
+  - Update git remote URL to point to renamed repository
+  - Push committed changes to the renamed repository
 
 ## Wrap up
 
