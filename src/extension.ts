@@ -61,7 +61,7 @@ function mcpResultToText(result: unknown): string {
 
 
 export async function activate(context: vscode.ExtensionContext) {
-	const output = vscode.window.createOutputChannel('MCP Generator');
+	const output = vscode.window.createOutputChannel('BROP Tools');
 	context.subscriptions.push(output);
 
 	const internalMcpJsonPath = context.asAbsolutePath(path.join('resources', 'mcp.json'));
