@@ -1,167 +1,119 @@
-# MCP Generator
+# BROP tools
 
-VS Code extension that:
+**BROP (Browser Remote Operations Protocol)** is a Chrome extension that provides native browser automation capabilities through a unified WebSocket bridge server. It enables you to control and automate Chrome programmatically with capabilities including:
 
-1) embeds an internal MCP config at `resources/mcp.json`
-2) generates `contributes.languageModelTools` in `package.json` by querying all MCP servers
-3) on activation, starts those servers and proxies each VS Code tool invocation to the right MCP server/tool.
+- 🎯 **Navigate** web pages and monitor page status
+- 🖱️ **Click** elements with smart visibility checks
+- ⌨️ **Type** text with human-like behavior simulation  
+- 📸 **Screenshot** capture of pages or specific elements
+- 🔧 **Execute JavaScript** with full async/await support
+- 📝 **Extract content** with semantic markdown and CSS selectors
+- 🪟 **Manage tabs** (create, close, list, switch)
+- 📊 **Console logs** capture and monitoring
+- 🔍 **DOM operations** with simplified element interaction
 
-## Configure servers
+This extension brings BROP's powerful automation tools into VS Code as native GitHub Copilot tools, allowing you to control browsers through natural language.
 
-Edit `resources/mcp.json`:
+## Quick Start
+
+### 1. Install the Chrome Extension
+
+brop-mcp requires a companion Chrome extension to communicate with the browser:
+
+1. Download the extension from [brop GitHub releases](https://github.com/borgius/brop/releases/tag/v2.7.8)
+2. Unzip the downloaded file
+3. Open Chrome and navigate to `chrome://extensions/`
+4. Enable "Developer mode" (toggle in the top right)
+5. Click "Load unpacked" and select the unzipped extension folder
+6. Ensure the extension is enabled when using brop tools
+
+### 2. Use the Tools
+
+Once installed, the tools become available in GitHub Copilot. You can:
+
+- **Ask Copilot to use them**: "Take a screenshot of example.com" or "Navigate to google.com and search for AI"
+- **Tools appear in Copilot's tool picker**: When chatting with Copilot, it can automatically select and invoke these tools
+- **See tool results in real-time**: Copilot will show you what the tools are doing and their results
+
+## Working with brop-mcp
+
+**brop-mcp** is a browser automation MCP server that provides powerful Chrome DevTools Protocol (CDP) capabilities. It enables you to control a web browser programmatically through natural language instructions to Copilot.
+
+### What can brop-mcp do?
+
+The brop-mcp server provides these capabilities:
+
+- **Navigate** to URLs
+- **Click** elements on pages
+- **Type** text into forms
+- **Take screenshots** of pages or elements
+- **Execute JavaScript** in the browser context
+- **Get page content** (HTML, text)
+- **Wait** for elements or conditions
+- **Handle dialogs** (alerts, confirms, prompts)
+- **Manage cookies** and local storage
+- **Network interception** and monitoring
+
+### Setting up brop-mcp
+
+The brop-mcp server is already configured in this extension.:
 
 ```jsonc
 {
-	"servers": {
-		"brop-mcp": {
-			"command": "npx",
-			"args": ["@borgius/brop-mcp@latest"],
-			"transport": { "type": "stdio", "framing": "ndjson" }
-		}
-	}
+  "servers": {
+	 "brop-mcp": {
+		"command": "npx",
+		"args": ["@borgius/brop-mcp@latest"]
+	 }
+  }
 }
 ```
 
-Supported stdio framings:
+**Requirements:**
 
-- `content-length` (default)
-- `ndjson`
+1. **Install the Chrome extension** (required):
 
-## Generate tools
+	brop-mcp requires a companion Chrome extension to communicate with the browser. 
+	
+	- Download the extension from [brop GitHub releases](https://github.com/borgius/brop/releases/tag/v2.7.8)
+	- Unzip the downloaded file
+	- Open Chrome → `chrome://extensions/`
+	- Enable "Developer mode" (toggle in top right)
+	- Click "Load unpacked" and select the unzipped extension folder
+	- The extension must be enabled and running when you use brop tools
 
-Run:
+2. **Start using it with Copilot**:
 
-`npm run update-tools`
+	Example prompts:
+	
+	- "Navigate to https://github.com and take a screenshot"
+	- "Go to google.com, search for 'VS Code extensions', and show me the results"
+	- "Open example.com, click the login button, and fill in the form"
+	- "Take a screenshot of the header element on the current page"
 
-This starts all servers from `resources/mcp.json`, calls MCP `tools/list`, and rewrites `package.json.contributes.languageModelTools`.
+### brop-mcp Tools
 
-Generated tool IDs use a friendly format (for example `brop_cdp_navigate`). Each contributed tool also includes explicit routing metadata (`mcpServer` and `mcpTool`) so the extension knows which MCP server and tool to invoke at runtime.
+After running `npm run update-tools`, you'll see tools like:
 
-## Run/debug
+- `brop_cdp_navigate` - Navigate to a URL
+- `brop_cdp_click` - Click an element
+- `brop_cdp_type` - Type text
+- `brop_cdp_screenshot` - Capture screenshots
+- `brop_cdp_evaluate` - Execute JavaScript
+- `brop_cdp_getContent` - Get page HTML/text
+- And many more...
 
-- `npm run compile`
-- Press `F5` to launch the extension host.
+### Troubleshooting brop-mcp
 
-Note: some MCP servers (like browser automation servers) may require an external app/extension (e.g. Chrome extension) connected before tool calls succeed.
+**Browser not responding:**
+- Ensure the Chrome extension is installed and enabled
+- Check that Chrome is running
+- Restart VS Code and Chrome
 
-## Using this repository as a template ✅
+## License
 
-You can use this project as a starting point when creating your own VS Code extension that exposes MCP-backed tools. Below are step-by-step instructions and examples to help you fork, customize, test, and publish your extension.
+MIT
 
-### Copilot-assisted setup (recommended)
+## Contributing
 
-If you’re using this repo as a template and want the fastest path to “my extension with my MCP tools”, you can let **GitHub Copilot** do the customization for you.
-
-1. Clone your fork and open it in VS Code.
-2. Open **Copilot Chat**.
-3. Type `@init-extension` and describe what you want. For example:
-
-	```
-	@init-extension Set up my extension with:
-	- name: my-browser-tools
-	- displayName: My Browser Tools
-	- publisher: mycompany
-	- description: Browser automation tools for VS Code
-	- GitHub owner: @myhandle
-	- MCP server: npx @anthropic/mcp-server-puppeteer
-	```
-
-	The `init-extension` agent is defined in `.github/agents/init-extension.md`.
-
-4. Answer any follow-up questions. Copilot will:
-	- update `package.json` metadata
-	- update `.github/CODEOWNERS`
-	- write `resources/mcp.json`
-	- run `npm install`, `npm run update-tools`, and `npm run compile`
-
-Review the diff before publishing.
-
-### Manual
-
-1. Use GitHub's **Use this template** button or fork the repo to create your own copy.
-2. Clone your fork locally and install dependencies:
-
-	```bash
-	git clone <your-repo-url>
-	cd <your-repo-folder>
-	npm install
-	```
-
-3. Update extension metadata in `package.json`: **change at minimum** the `name`, `displayName`, `description`, and `publisher` fields so your extension is uniquely identified.
-
-	Example:
-
-	```jsonc
-	{
-	  "name": "my-mcp-extension",
-	  "displayName": "My MCP Extension",
-	  "description": "My custom tools backed by MCP servers",
-	  "publisher": "your-publisher-id"
-	}
-	```
-
-4. Configure MCP servers in `resources/mcp.json`. Each server needs a `command` (or absolute path), optional `args`, and a `transport` definition.
-
-	Example (using `npx`):
-
-	```jsonc
-	{
-	  "servers": {
-		 "my-server": {
-			"command": "npx",
-			"args": ["@example/my-mcp-server@latest"],
-			"transport": { "type": "stdio", "framing": "ndjson" }
-		 }
-	  }
-	}
-	```
-
-	Tip: If your command is not on the GUI PATH (common on macOS), either use the absolute command path (e.g. `/opt/homebrew/bin/npx`) or launch VS Code from a terminal so it inherits your shell PATH.
-
-5. Generate tool contributions and write them into `package.json`:
-
-	```bash
-	npm run update-tools
-	```
-
-	This starts the servers, calls `tools/list` and rewrites `contributes.languageModelTools` with friendly tool IDs and routing metadata (`mcpServer` / `mcpTool`).
-
-6. Build and test:
-
-	- Build: `npm run compile`
-	- Run in development: Press `F5` to start the extension host and exercise the tools.
-	- Tests: `npm test`
-
-7. Publish (optional):
-
-	- Install `vsce` or use `@vscode/vsce` to package and publish the extension.
-	- Typical steps:
-
-	  ```bash
-	  npm install -g vsce
-	  vsce package
-	  vsce publish
-	  ```
-
-	  Make sure your `publisher` is set and you have created a publisher on the VS Code Marketplace.
-
-### Common customization & tips
-
-- Tool ID naming: The generator uses `serverShort_toolName` (e.g., `brop_cdp_navigate`). You can rename later in `package.json`, but keep `mcpServer` and `mcpTool` metadata pointing to the original MCP tool.
-- PATH issues: If servers fail to spawn with `ENOENT`, either launch VS Code from a terminal or set `command` to an absolute path, or add an `env` entry into `resources/mcp.json`.
-- External dependencies: Some MCP servers require external components (e.g., browser extensions, running browsers). Document prerequisites in your README.
-- Security: Never commit secrets or private keys into `resources/mcp.json`. Use environment variables instead and document how to supply them locally or via CI.
-
-### Template checklist
-
-1. Fork or use this template
-2. Update `package.json` metadata (`name`, `displayName`, `publisher`, `description`)
-3. Edit `resources/mcp.json` to include your servers
-4. Run `npm install` then `npm run update-tools`
-5. Build & test: `npm run compile` + `F5`, `npm test`
-6. Update README with project-specific instructions and prerequisites
-7. Package & publish when ready
-
-A GitHub Actions workflow is included at `.github/workflows/ci.yml`; it runs compile, tests, and validates `update-tools`. The workflow also includes an optional auto-commit step (runs on pushes to the default branch) that will commit `package.json` changes when `update-tools` updates the contributed tools — edit or remove that step if you prefer manual commits.
-
-Prefer editing `resources/mcp.example.json` while getting started and copy it to `resources/mcp.json` in your fork when ready. See `TEMPLATE.md` for a concise onboarding checklist. Use the interactive helper to scaffold a forked project quickly: `npm run init-extension` — it updates `package.json`, writes `resources/mcp.json`, and updates `.github/CODEOWNERS` for you. Update `.github/CODEOWNERS` with your GitHub handle if you prefer to do it manually.
+Issues and pull requests are welcome!
