@@ -1,14 +1,11 @@
 {
   "servers": {
-    "mock-mcp": {
-      "command": "node",
+    "brop": {
+      "command": "npx",
       "args": [
-        "scripts/mock-mcp.js"
-      ],
-      "transport": {
-        "type": "stdio",
-        "framing": "ndjson"
-      }
+        "--yes",
+        "@borgius/brop-mcp@latest"
+      ]
     }
   }
 }
