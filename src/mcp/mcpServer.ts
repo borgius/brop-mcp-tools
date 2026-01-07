@@ -87,6 +87,9 @@ export class McpServerClient {
 			stdio: 'pipe',
 		});
 
+		// Unref the child process so Node.js doesn't wait for it to exit
+		this.child.unref();
+
 		const child = this.child;
 		const errorPromise = new Promise<never>((_, reject) => {
 			child.once('error', (err) => {
@@ -115,9 +118,12 @@ export class McpServerClient {
 			this.opts.logger?.(`[${this.name}] exited (code=${code}, signal=${signal})`);
 		});
 
+		// Default to ndjson framing (simpler, more widely supported).
+		// The reader supports both Content-Length and ndjson formats,
+		// so we can receive responses in either format regardless of what we send.
 		this.rpc = new JsonRpcClient(this.child.stdout, this.child.stdin, {
 			logger: this.opts.logger ? (m) => this.opts.logger?.(`[${this.name} rpc] ${m}`) : undefined,
-			framing: this.config.transport?.framing ?? 'content-length',
+			framing: this.config.transport?.framing ?? 'ndjson',
 		});
 
 		await Promise.race([this.initialize(), errorPromise, exitPromise, this.timeout(60000, 'initialize timeout')]);
@@ -126,11 +132,40 @@ export class McpServerClient {
 	public async stop(): Promise<void> {
 		this.started = false;
 		this.startPromise = undefined;
-		this.rpc?.removeAllListeners();
-		this.rpc = undefined;
+		
+		// Clean up RPC client and remove all listeners
+		if (this.rpc) {
+			this.rpc.cleanup();
+			this.rpc = undefined;
+		}
 
 		if (this.child && !this.child.killed) {
-			this.child.kill();
+			// Remove all event listeners from child to prevent keeping event loop alive
+			this.child.removeAllListeners();
+			this.child.stdin.removeAllListeners();
+			this.child.stdout.removeAllListeners();
+			this.child.stderr.removeAllListeners();
+			
+			// Unpipe and destroy streams to release handles
+			try {
+				this.child.stdout.unpipe();
+				this.child.stderr.unpipe();
+				this.child.stdin.end();
+				this.child.stdout.destroy();
+				this.child.stderr.destroy();
+			} catch {
+				// Ignore errors during stream cleanup
+			}
+			
+			// Kill the process - don't wait for it
+			this.child.kill('SIGTERM');
+			
+			// Force kill after a brief delay if still running
+			setTimeout(() => {
+				if (this.child && !this.child.killed) {
+					this.child.kill('SIGKILL');
+				}
+			}, 500).unref();
 		}
 		this.child = undefined;
 	}
@@ -140,14 +175,24 @@ export class McpServerClient {
 		const rpc = this.mustRpc();
 		const tools: McpTool[] = [];
 		let cursor: string | undefined;
-		while (true) {
-			const res = (await rpc.request('tools/list', cursor ? { cursor } : {})) as McpToolsListResponse;
-			tools.push(...(res.tools ?? []));
-			cursor = res.nextCursor;
-			if (!cursor) {
-				break;
+		
+		const timeoutMs = 30000; // 30 second timeout
+		const listToolsWithTimeout = async () => {
+			while (true) {
+				const res = (await rpc.request('tools/list', cursor ? { cursor } : {})) as McpToolsListResponse;
+				tools.push(...(res.tools ?? []));
+				cursor = res.nextCursor;
+				if (!cursor) {
+					break;
+				}
 			}
-		}
+		};
+		
+		await Promise.race([
+			listToolsWithTimeout(),
+			this.timeout(timeoutMs, `listTools timeout`),
+		]);
+		
 		return tools;
 	}
 

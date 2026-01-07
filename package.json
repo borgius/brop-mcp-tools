@@ -82,8 +82,8 @@
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
     "package": "npm run check-types && npm run lint && node esbuild.js --production",
-    "update-tools": "node dist/update-tools.js",
-    "init-extension": "node scripts/init-extension.js",
+    "update-tools": "vite-node src/update-tools.ts",
+    "init-extension": "vite-node scripts/init-extension.js",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
@@ -92,15 +92,16 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.107.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
-    "typescript-eslint": "^8.48.1",
-    "eslint": "^9.39.1",
+    "@types/node": "^22.19.3",
+    "@types/vscode": "^1.107.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.27.1",
+    "eslint": "^9.39.1",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.9.3",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "typescript-eslint": "^8.48.1",
+    "vite-node": "^5.2.0"
   }
 }

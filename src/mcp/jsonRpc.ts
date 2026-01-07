@@ -70,6 +70,14 @@ export class JsonRpcClient extends EventEmitter {
 		});
 	}
 
+	public cleanup(): void {
+		// Remove all listeners from streams to allow event loop to exit
+		this.input.removeAllListeners();
+		this.output.removeAllListeners();
+		this.removeAllListeners();
+		this.rejectAllPending(new Error('JSON-RPC client cleaned up'));
+	}
+
 	private writeMessage(obj: JsonRpcRequest | JsonRpcNotification): void {
 		const json = JSON.stringify(obj);
 		if (this.framing === 'ndjson') {
