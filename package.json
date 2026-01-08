@@ -2,7 +2,7 @@
   "name": "brop-mcp-tools",
   "displayName": "Brop MCP Tools",
   "description": "VS Code extension providing browser automation tools via Brop MCP server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.107.0"
   },
